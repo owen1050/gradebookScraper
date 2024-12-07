@@ -1,18 +1,19 @@
-from selenium import webdriver
-import time
+import requests, time
+from lxml import html
 
 url = "https://www.wunderground.com/maps/satellite/regional-infrared/usaec"
 xpath = "//*[@id=\"main-page-content\"]/section/div[1]/div[2]/div[2]/img[1]"
 
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-driver = webdriver.Chrome('chromedriver.exe', options=options)
+response = requests.get(url)
 
-# driver.get method() will navigate to a page given by the URL address
-driver.get(url)
-time.sleep(3)
+# Parse the HTML content
+tree = html.fromstring(response.content)
+#print(response.content)
 
-gifElement = driver.find_element_by_xpath(xpath)
-urlName = gifElement.get_attribute('src')
-driver.quit()
-print(urlName)
+# Find the element using the XPath
+element = tree.find_class("map ng-star-inserted")
+print(element)
+# Extract the 'src' attribute
+src = element[0][0].values()
+
+print(src)
